@@ -13,7 +13,7 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
         this.setTarget(Phaser.Math.DegToRad(initialAngle))
 
         let legEnd = this.getPositionFromAngle(originObject, initialAngle, length)
-        this.legLine = new Phaser.GameObjects.Line(scene, 0, 0, originObject.x, originObject.y, legEnd.x, legEnd.y, 0xff0000)
+        this.legLine = new Phaser.GameObjects.Line(scene, originObject.x, originObject.y, 0, 0, 100, 100, 0xff0000)
         scene.add.existing(this.legLine)
     }
 
