@@ -6,21 +6,14 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         scene.physics.add.existing(this)
         this.setOrigin(0.5)
 
-        this.legOne = new SpiderLeg(scene, this, null, null, 100, 0)
-        this.legOne.getPositionFromAngle(Phaser.Math.DegToRad(0))
-        this.legOne.getPositionFromAngle(Phaser.Math.DegToRad(45))
-        this.legOne.getPositionFromAngle(Phaser.Math.DegToRad(90))
-        this.legOne.getPositionFromAngle(Phaser.Math.DegToRad(135))
-        this.legOne.getPositionFromAngle(Phaser.Math.DegToRad(180))
-        this.legOne.getPositionFromAngle(Phaser.Math.DegToRad(225))
-        this.legOne.getPositionFromAngle(Phaser.Math.DegToRad(270))
-        this.legOne.getPositionFromAngle(Phaser.Math.DegToRad(315))
-        this.legOne.getPositionFromAngle(Phaser.Math.DegToRad(360))
+        this.legOne = new SpiderLeg(scene, this, null, null, 100, 90)
+        //this.legTwo = new SpiderLeg(scene, this, null, null, 100, 180)
         this.legAngle = 0
     }
 
     update(dt) {
-        this.legOne.getPositionFromAngle(Phaser.Math.DegToRad(this.legAngle))
+        //this.legOne.setTarget(Phaser.Math.DegToRad(this.legAngle))
+        //this.legTwo.setTarget(Phaser.Math.DegToRad(this.legAngle + 180))
         this.legAngle += 1
     }
 }
