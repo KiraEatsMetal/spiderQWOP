@@ -19,11 +19,13 @@ class Play extends Phaser.Scene {
     //make things
     create() {
         //can recieve data
+        this.player = new SpiderBody(this, game.config.width/2, game.config.height/2, null, null)
     }
 
     //do constantly
-    update() {
+    update(dt) {
         //automatically fed time and delta
+        this.player.update(dt)
     }
 
     
