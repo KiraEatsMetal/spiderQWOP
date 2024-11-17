@@ -13,13 +13,29 @@ class Play extends Phaser.Scene {
 
     //load assets
     preload() {
+        this.load.path = './assets/'
+        //entity assets
+        this.load.image('spiderBody', 'spiderBody.png')
 
     }
 
     //make things
     create() {
         //can recieve data
-        this.player = new SpiderBody(this, game.config.width/2, game.config.height/2, null, null)
+        //define keys
+        key1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE)
+        key2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO)
+        key3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE)
+        key4 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR)
+        key5 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE)
+        key6 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SIX)
+        key7 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN)
+        key8 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT)
+        key9 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NINE)
+        key0 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO)
+
+        //create player
+        this.player = new SpiderBody(this, game.config.width/2, game.config.height/2, 'spiderBody', null)
     }
 
     //do constantly
