@@ -1,0 +1,12 @@
+what if you ik-ed the body to each leg
+
+how does ik work?
+start at one end, get angle and distance of next point
+if distance is out of constraint (ex: too close, too far), preserve angle but change distance
+do this for every point
+do this for every point in reverse order
+repeat until in constraints or cap it
+
+how to adapt to spider?
+every ACTIVE leg, if out of constraint (too far, maybe too close), pulls body towards leg
+preserves the angle, changes the distance

@@ -21,27 +21,51 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         
         //this.setAngle(90)
         this.legArray = [this.legOne, this.legTwo, this.legThree, this.legFour, this.legFive, this.legSix, this.legSeven, this.legEight]
+        this.leftLegArray = [this.legOne, this.legTwo, this.legThree, this.legFour]
+        this.rightLegArray = [this.legFive, this.legSix, this.legSeven, this.legEight]
         this.controlArray = [key1, key2, key3, key4, key7, key8, key9, key0]
     }
 
     update(dt) {
 
         for(let key = 0; key < this.controlArray.length; key++) {
+            this.legArray[key].updateLeg()
             if(this.controlArray[key].isDown) {
                 this.legArray[key].rotateTarget()
             }
-            this.legArray[key].updateLeg()
         }
 
         let x = 0
         let y = 0
+        let activeLegCount = 0
         for(let i = 0; i < this.legArray.length; i++) {
-            x += this.legArray[i].x
-            y += this.legArray[i].y
+            if(this.legArray[i].active) {
+                x += this.legArray[i].legEnd.x
+                y += this.legArray[i].legEnd.y
+                activeLegCount += 1
+            }
         }
-        x = x / this.legArray.length
-        y = y / this.legArray.length
+        x = x / activeLegCount
+        y = y / activeLegCount
         //console.log(x, y)
-        this.setPosition(x, y)
+        this.approachPosition(x, y, 0.1)
+    }
+
+    approachPosition(x, y, factor=0.1) {
+        this.setX(this.x + (x - this.x) * factor)
+        this.setY(this.y + (y - this.y) * factor)
+    }
+
+    getAngleFromPosition(start, end) {
+        let coords = new Phaser.Math.Vector2(end.x - start.x, end.y - start.y)
+        let angle = Math.atan2(-coords.y, coords.x)
+        angle = Phaser.Math.RadToDeg(angle)
+        while(angle < -180) {
+            angle += 360
+        }
+        while(angle > 180) {
+            angle -= 360
+        }
+        return angle
     }
 }
