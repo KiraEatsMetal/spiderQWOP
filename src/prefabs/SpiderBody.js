@@ -45,8 +45,12 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
                 activeLegCount += 1
             }
         }
-        x = x / activeLegCount
-        y = y / activeLegCount
+        if(activeLegCount > 0) {
+            x = x / activeLegCount
+            y = y / activeLegCount
+        } else {
+            x = this.x, y = this.y
+        }
         //console.log(x, y)
         this.approachPosition(x, y, 0.1)
     }
