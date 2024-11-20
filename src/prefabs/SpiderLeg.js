@@ -17,24 +17,15 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
         this.direction = (clockwise) ? -1: 1
 
         //debug line for initial leg angle
-        this.legEnd = this.getPositionFromAngle(this.originObject, initialAngle, this.length)
+        this.legEnd = this.originObject.getPositionFromAngle(this.originObject, initialAngle, this.length)
         this.legLine = new Phaser.GameObjects.Line(scene, originObject.x, originObject.y, 0, 0, this.legEnd.x - originObject.x, this.legEnd.y - originObject.y, 0xff0000).setOrigin(0)
         scene.add.existing(this.legLine)
     }
 
     setTarget(angleDeg) {
-        let position = this.getPositionFromAngle(this.originObject, angleDeg, this.length)
+        let position = this.originObject.getPositionFromAngle(this.originObject, angleDeg, this.length)
         this.x = position.x
         this.y = position.y
-    }
-
-    getPositionFromAngle(origin, angleDeg, length) {
-        let angleRadians = Phaser.Math.DegToRad(angleDeg)
-        let x = origin.x + length * Math.cos(angleRadians)
-        let y = origin.y - length * Math.sin(angleRadians)
-        let position = {x, y}
-        //console.log(position.x, position.y)
-        return position
     }
 
     rotateTarget() {
@@ -44,15 +35,16 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
     }
 
     updateLeg() {
-        //set active
+        /*
         if(this.active) {
             this.ikPullBody()
         }
-        this.active = true
-
+        */
         let legAngle = this.originObject.getAngleFromPosition(this.originObject, this)
-        this.legEnd = this.getPositionFromAngle(this.originObject, legAngle, this.length)
+        this.legEnd = this.originObject.getPositionFromAngle(this.originObject, legAngle, this.length)
         this.updateLegLine(this.legEnd)
+        //set active
+        this.active = true
     }
 
     updateLegLine(coordinates) {
@@ -63,7 +55,7 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
         let angle = this.originObject.getAngleFromPosition(this, this.originObject)
         let distance = Math.sqrt((this.x - this.originObject.x) ** 2 + (this.y - this.originObject.y) ** 2)
         if(Math.abs(distance) > this.length) {
-            let targetPosition = this.getPositionFromAngle(this.legEnd, angle, this.length)
+            let targetPosition = this.originObject.getPositionFromAngle(this.legEnd, angle, this.length)
             this.originObject.setPosition(targetPosition.x, targetPosition.y)
         }
         //console.log(angle)
