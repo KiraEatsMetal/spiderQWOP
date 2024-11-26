@@ -15,6 +15,17 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         this.legSix = new SpiderLeg(scene, this, null, null, 100, 10)
         this.legSeven = new SpiderLeg(scene, this, null, null, 100, -10)
         this.legEight = new SpiderLeg(scene, this, null, null, 100, -30)
+
+        //set leg constraint targets
+        this.legOne.setConstraintTargets(this.legEight, this.legTwo)
+        this.legTwo.setConstraintTargets(this.legOne, this.legThree)
+        this.legThree.setConstraintTargets(this.legTwo, this.legFour)
+        this.legFour.setConstraintTargets(this.legThree, this)
+        
+        this.legFive.setConstraintTargets(this.legSix, this)
+        this.legSix.setConstraintTargets(this.legSeven, this.legFive)
+        this.legSeven.setConstraintTargets(this.legEight, this.legSix)
+        this.legEight.setConstraintTargets(this.legOne, this.legSeven)
         
         //each leg needs a control
         this.legArray = [this.legOne, this.legTwo, this.legThree, this.legFour, this.legFive, this.legSix, this.legSeven, this.legEight]
@@ -37,17 +48,17 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
     }
 
     update(dt) {
+        //MOVMENT
         //go through each leg
         for(let key in this.controlArray) {
-            //if pressing the leg's button, rotate
-            //else ik pull
+            this.legArray[key].updateConstraints()
+            //if pressing the leg's button, rotate, else ik pull
             if(this.controlArray[key].isDown) {
                 this.legArray[key].rotateTarget()
             } else {
                 //THIS HAS TO HAPPEN BEFORE UPDATE LEG
                 this.legArray[key].ikPullBody()
             }
-            //update leg
             this.legArray[key].updateLeg()
         }
 
@@ -70,7 +81,11 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         } else {
             this.targetX = this.x, this.targetY = this.y
         }
+        
+        this.approachPosition(this.targetX, this.targetY, 0.1)
 
+
+        //ROTATION
         let spiderX = this.x
         let spiderY = this.y
         this.totalVector = new Phaser.Math.Vector2(0, 0)
@@ -91,9 +106,11 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         this.rightAngle = this.getAngleFromPosition({x: 0, y: 0}, this.totalVector)
         
         //adjusting angles
+        //left angle is from 0-360
         if(this.leftAngle < 0) {
             this.leftAngle += 360
         }
+        //right angle is from -360 to 0
         if(this.rightAngle > 0) {
             this.rightAngle -= 360
         }
@@ -102,14 +119,13 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         if(this.leftAngle - averageAngle > 180) {
             averageAngle += 180
         }
-        
-        this.approachPosition(this.targetX, this.targetY, 0.1)
+
+        //phaser sprite angle rotates clockwise, our math uses counterclockwise angles
+        this.setAngle(-averageAngle)
 
         if(this.logging) {
-            console.log(this.leftAngle, this.rightAngle, averageAngle)
+            //console.log(this.leftAngle, this.rightAngle, averageAngle)
         }
-        //phaser sprite angle rotates clockwise
-        this.setAngle(-averageAngle)
         this.logging = true
     }
 
@@ -134,9 +150,9 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
     getPositionFromAngle(origin, angleDeg, length) {
         let angleRadians = Phaser.Math.DegToRad(angleDeg)
         let x = origin.x + length * Math.cos(angleRadians)
+        //remember, phaser y is down, not up, so we subtract instead of add
         let y = origin.y - length * Math.sin(angleRadians)
         let position = {x, y}
-        //console.log(position.x, position.y)
         return position
     }
 }
