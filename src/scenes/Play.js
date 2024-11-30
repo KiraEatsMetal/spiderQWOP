@@ -16,6 +16,7 @@ class Play extends Phaser.Scene {
         this.load.path = './assets/'
         //entity assets
         this.load.image('spiderBody', 'spiderBody.png')
+        this.load.image('spiderLeg', 'spiderLeg.png')
 
     }
 

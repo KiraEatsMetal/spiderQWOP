@@ -8,28 +8,48 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
 
         //create legs
         this.legOne = new SpiderLeg(scene, this, null, null, 100, 210, true)
-        this.legTwo = new SpiderLeg(scene, this, null, null, 100, 190, true)
-        this.legThree = new SpiderLeg(scene, this, null, null, 100, 170, true)
-        this.legFour = new SpiderLeg(scene, this, null, null, 100, 150, true)
-        this.legFive = new SpiderLeg(scene, this, null, null, 100, 30)
-        this.legSix = new SpiderLeg(scene, this, null, null, 100, 10)
-        this.legSeven = new SpiderLeg(scene, this, null, null, 100, -10)
         this.legEight = new SpiderLeg(scene, this, null, null, 100, -30)
+        
+        
+        this.legTwo = new SpiderLeg(scene, this, null, null, 100, 190, true)
+        this.legSeven = new SpiderLeg(scene, this, null, null, 100, -10)
+        
+
+        this.legThree = new SpiderLeg(scene, this, null, null, 100, 170, true)
+        this.legSix = new SpiderLeg(scene, this, null, null, 100, 10)
+        
+
+        this.legFive = new SpiderLeg(scene, this, null, null, 100, 30)
+        this.legFour = new SpiderLeg(scene, this, null, null, 100, 150, true)
+        //put body on top of legs
+        this.setDepth(1)
+
+
+        //create constraint targets
+        this.rightConstraint = new Phaser.GameObjects.Sprite(scene, x, y, null, null)
+        this.leftConstraint = new Phaser.GameObjects.Sprite(scene, x, y, null, null)
+        this.backConstraint = new Phaser.GameObjects.Sprite(scene, x, y, null, null)
+        this.rightConstraint.active = true
+        this.leftConstraint.active = true
+        this.backConstraint.active = true
+        this.updateAngle(this.angle)
 
         //set leg constraint targets
-        this.legOne.setConstraintTargets(this.legEight, this.legTwo)
+        this.legOne.setConstraintTargets(this.backConstraint, this.legTwo)
         this.legTwo.setConstraintTargets(this.legOne, this.legThree)
         this.legThree.setConstraintTargets(this.legTwo, this.legFour)
-        this.legFour.setConstraintTargets(this.legThree, this)
+        this.legFour.setConstraintTargets(this.legThree, this.leftConstraint)
         
-        this.legFive.setConstraintTargets(this.legSix, this)
+        this.legFive.setConstraintTargets(this.legSix, this.rightConstraint)
         this.legSix.setConstraintTargets(this.legSeven, this.legFive)
         this.legSeven.setConstraintTargets(this.legEight, this.legSix)
-        this.legEight.setConstraintTargets(this.legOne, this.legSeven)
+        this.legEight.setConstraintTargets(this.backConstraint, this.legSeven)
         
         //each leg needs a control
-        this.legArray = [this.legOne, this.legTwo, this.legThree, this.legFour, this.legFive, this.legSix, this.legSeven, this.legEight]
-        this.controlArray = [key1, key2, key3, key4, key7, key8, key9, key0]
+        //this.legArray = [this.legOne, this.legTwo, this.legThree, this.legFour, this.legFive, this.legSix, this.legSeven, this.legEight]
+        //this.controlArray = [key1, key2, key3, key4, key7, key8, key9, key0]
+        this.legArray = [this.legFour, this.legFive, this.legThree, this.legSix, this.legTwo, this.legSeven, this.legOne, this.legEight]
+        this.controlArray = [key4, key7, key3, key8, key2, key9, key1, key0]
         //group legs into left and right legs
         this.leftLegArray = [this.legOne, this.legTwo, this.legThree, this.legFour]
         this.rightLegArray = [this.legFive, this.legSix, this.legSeven, this.legEight]
@@ -51,15 +71,24 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         //MOVMENT
         //go through each leg
         for(let key in this.controlArray) {
-            this.legArray[key].updateConstraints()
+            let control = this.controlArray[key]
+            let leg = this.legArray[key]
+
+            leg.updateConstraints()
             //if pressing the leg's button, rotate, else ik pull
-            if(this.controlArray[key].isDown) {
-                this.legArray[key].rotateTarget()
+            if(control.isDown && leg.constraintsActive()) {
+                leg.active = false
+                leg.rotateTarget()
             } else {
                 //THIS HAS TO HAPPEN BEFORE UPDATE LEG
-                this.legArray[key].ikPullBody()
+                leg.active = true
+                leg.ikPullBody()
             }
-            this.legArray[key].updateLeg()
+            leg.updateLeg()
+        }
+        //go through and ik pull again
+        for(let key in this.controlArray) {
+            this.legArray[key].ikPullBody()
         }
 
         this.targetX = 0
@@ -121,7 +150,7 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         }
 
         //phaser sprite angle rotates clockwise, our math uses counterclockwise angles
-        this.setAngle(-averageAngle)
+        this.updateAngle(-averageAngle)
 
         if(this.logging) {
             //console.log(this.leftAngle, this.rightAngle, averageAngle)
@@ -132,6 +161,9 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
     approachPosition(x, y, factor=0.1) {
         this.setX(this.x + (x - this.x) * factor)
         this.setY(this.y + (y - this.y) * factor)
+        this.leftConstraint.setPosition(this.x, this.y)
+        this.rightConstraint.setPosition(this.x, this.y)
+        this.backConstraint.setPosition(this.x, this.y)
     }
 
     getAngleFromPosition(start, end) {
@@ -154,5 +186,19 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         let y = origin.y - length * Math.sin(angleRadians)
         let position = {x, y}
         return position
+    }
+
+    updateAngle(angle) {
+        this.setAngle(angle)
+        this.leftConstraint.setAngle(angle - 30)
+        this.rightConstraint.setAngle(angle + 30)
+        this.backConstraint.setAngle(angle - 180)
+    }
+
+    getDistanceFromPosition(start, end) {
+        let xDiff = end.x - start.x
+        let yDiff = end.y - start.y
+        let result = Math.sqrt((xDiff ** 2 + yDiff ** 2))
+        return result
     }
 }

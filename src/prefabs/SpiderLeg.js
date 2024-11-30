@@ -20,13 +20,17 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
         this.setAlpha(0)
         this.setTarget(initialAngle)
         let legAngle = this.originObject.getAngleFromPosition(this.originObject, this)
-        console.log(legAngle)
+        //console.log(legAngle)
         this.setAngle(-legAngle)
         this.active = false
 
+        //leg visuals
+        this.legGraphic = new Phaser.GameObjects.Sprite(scene, originObject.x, originObject.y, 'spiderLeg', null).setOrigin(0, 0.5)
+        scene.add.existing(this.legGraphic)
+
         //debug line for leg angle
         this.legEnd = this.originObject.getPositionFromAngle(this.originObject, initialAngle, this.length)
-        this.legLine = new Phaser.GameObjects.Line(scene, originObject.x, originObject.y, 0, 0, this.legEnd.x - originObject.x, this.legEnd.y - originObject.y, 0xff0000).setOrigin(0)
+        this.legLine = new Phaser.GameObjects.Line(scene, originObject.x, originObject.y, 0, 0, this.legEnd.x - originObject.x, this.legEnd.y - originObject.y, 0xff0000, 0).setOrigin(0)
         scene.add.existing(this.legLine)
     }
 
@@ -39,16 +43,16 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
         if(this.angleConstraints) {
             //adjusting angle
             if(this.angleConstraints.max - angle > 180) {
-                console.log('Angle Max difference over 180')
+                //console.log('Angle Max difference over 180')
                 angle += 360
             }
             //logging
-            console.log('one: ' + angle, 'max: ' + this.angleConstraints.max, 'min: ' + this.angleConstraints.min)
+            //console.log('one: ' + angle, 'max: ' + this.angleConstraints.max, 'min: ' + this.angleConstraints.min)
 
             var difference = Math.abs(this.angleConstraints.max - this.angleConstraints.min)
 
             if(this.angleConstraints.max * this.direction < this.angleConstraints.min * this.direction) {
-                console.log('ABORT, MAX LESS THAN MIN')
+                //console.log('ABORT, MAX LESS THAN MIN')
                 //manually set to middle of constraints without calling set target to avoid recursing
                 angleDeg = (this.angleConstraints.max + this.angleConstraints.min) / 2
                 position = this.originObject.getPositionFromAngle(this.originObject, angleDeg, this.length)
@@ -56,11 +60,11 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
                 this.y = position.y
 
             } else if(angle * this.direction > this.angleConstraints.max * this.direction) {
-                console.log('at max')
+                //console.log('at max')
                 this.setTarget(this.angleConstraints.max - difference * 0.001 * this.direction)
 
             } else if(angle * this.direction < this.angleConstraints.min * this.direction) {
-                console.log('at min')
+                //console.log('at min')
                 this.setTarget(this.angleConstraints.min + difference * 0.001 * this.direction)
                 
             } else {
@@ -69,17 +73,17 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
             }
 
             //logging
-            console.log('two: ' + angle, 'max: ' + this.angleConstraints.max, 'min: ' + this.angleConstraints.min)
-            console.log('')
+            //console.log('two: ' + angle, 'max: ' + this.angleConstraints.max, 'min: ' + this.angleConstraints.min)
+            //console.log('')
         } else {
-            console.log('no angle constraints: ', + toString(this.angleConstraints))
+            //console.log('no angle constraints: ', + toString(this.angleConstraints))
             this.x = position.x
             this.y = position.y
         }
     }
 
     rotateTarget() {
-        this.active = false
+        //this.active = false
         let angle = this.originObject.getAngleFromPosition(this.originObject, this)
         this.setTarget(angle + 3 * this.direction)
     }
@@ -89,7 +93,12 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
         this.legEnd = this.originObject.getPositionFromAngle(this.originObject, legAngle, this.length)
         this.updateLegLine(this.legEnd)
         this.setAngle(-legAngle)
-        this.active = true
+        //visual leg
+        this.legGraphic.setPosition(this.originObject.x, this.originObject.y)
+        this.legGraphic.setAngle(-legAngle)
+        let distance = this.originObject.getDistanceFromPosition(this.originObject, this)
+        this.legGraphic.setScale(distance / this.legGraphic.width, 1)
+        //this.active = true
     }
 
     updateLegLine(coordinates) {
@@ -122,6 +131,13 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
         this.minTarget = minTarget
         this.maxTarget = maxTarget
         this.updateConstraints()
+    }
+
+    constraintsActive() {
+        if(this.minTarget.active && this.maxTarget.active) {
+            return true
+        }
+        return false
     }
 
     updateConstraints() {

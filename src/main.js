@@ -8,12 +8,12 @@ let config = {
     width: 1024,
     height: 512,
     render: {
-        pixelArt:true,
+        //pixelArt:true,
     },
     physics:{
         default: 'arcade',
         arcade: {
-            debug: true
+            //debug: true
         }
     },
     scene: [Play]
