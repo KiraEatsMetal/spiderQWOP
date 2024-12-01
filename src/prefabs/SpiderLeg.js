@@ -82,32 +82,38 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
         }
     }
 
-    rotateTarget() {
-        //this.active = false
+    rotateTarget(amount) {
+        //you want to dt this since you do it every frame
         let angle = this.originObject.getAngleFromPosition(this.originObject, this)
-        this.setTarget(angle + 3 * this.direction)
+        this.setTarget(angle + amount * this.direction)
     }
 
     updateLeg() {
         let legAngle = this.originObject.getAngleFromPosition(this.originObject, this)
         this.legEnd = this.originObject.getPositionFromAngle(this.originObject, legAngle, this.length)
-        this.updateLegLine(this.legEnd)
+
+        //update debug line
+        //this.updateLegLine(this.legEnd)
         this.setAngle(-legAngle)
         //visual leg
+        //set origin to the spider body
         this.legGraphic.setPosition(this.originObject.x, this.originObject.y)
+        //angle is negative because our math uses counterclockwise angles
         this.legGraphic.setAngle(-legAngle)
+        //get distance between leg target and spider body, scale leg by distance
         let distance = this.originObject.getDistanceFromPosition(this.originObject, this)
         this.legGraphic.setScale(distance / this.legGraphic.width, 1)
-        //this.active = true
     }
 
     updateLegLine(coordinates) {
+        //this function was for debugging before we had graphics
         this.legLine.setTo(0, 0, coordinates.x - this.originObject.x, coordinates.y - this.originObject.y).setPosition(this.originObject.x, this.originObject.y)
     }
 
     ikPullBody() {
         let angle = this.originObject.getAngleFromPosition(this, this.originObject)
-        let distance = Math.sqrt((this.x - this.originObject.x) ** 2 + (this.y - this.originObject.y) ** 2)
+        let distance = this.originObject.getDistanceFromPosition(this.originObject, this)
+        //if distance is too far, preserve angle but shorten distance
         if(Math.abs(distance) > this.length) {
             let targetPosition = this.originObject.getPositionFromAngle(this.legEnd, angle, this.length)
             this.originObject.setPosition(targetPosition.x, targetPosition.y)
@@ -116,6 +122,7 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
 
     setConstraints(min, max) {
         this.angleConstraints = {}
+        //prevents problems with angles going from 180 to -180
         if(this.direction == 1 && max < 0) {
             max += 360
         }
@@ -124,7 +131,6 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
         }
         this.angleConstraints.min = min
         this.angleConstraints.max = max
-        //console.log(this.angleConstraints)
     }
 
     setConstraintTargets(minTarget, maxTarget) {
@@ -134,6 +140,7 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
     }
 
     constraintsActive() {
+        //are the constraint targets (usually other legs) active? if so, you can do leg things
         if(this.minTarget.active && this.maxTarget.active) {
             return true
         }

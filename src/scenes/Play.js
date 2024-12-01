@@ -40,7 +40,7 @@ class Play extends Phaser.Scene {
     }
 
     //do constantly
-    update(dt) {
+    update(timestep, dt) {
         //automatically fed time and delta
         this.player.update(dt)
     }

@@ -78,7 +78,7 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
             //if pressing the leg's button, rotate, else ik pull
             if(control.isDown && leg.constraintsActive()) {
                 leg.active = false
-                leg.rotateTarget()
+                leg.rotateTarget(3 * dt / 16)
             } else {
                 //THIS HAS TO HAPPEN BEFORE UPDATE LEG
                 leg.active = true
@@ -111,7 +111,7 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
             this.targetX = this.x, this.targetY = this.y
         }
         
-        this.approachPosition(this.targetX, this.targetY, 0.1)
+        this.approachPosition(this.targetX, this.targetY, 0.1 * dt / 16)
 
 
         //ROTATION
@@ -153,14 +153,15 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         this.updateAngle(-averageAngle)
 
         if(this.logging) {
-            //console.log(this.leftAngle, this.rightAngle, averageAngle)
         }
         this.logging = true
     }
 
     approachPosition(x, y, factor=0.1) {
+        //you want to dt this
         this.setX(this.x + (x - this.x) * factor)
         this.setY(this.y + (y - this.y) * factor)
+        //update all constraints
         this.leftConstraint.setPosition(this.x, this.y)
         this.rightConstraint.setPosition(this.x, this.y)
         this.backConstraint.setPosition(this.x, this.y)
