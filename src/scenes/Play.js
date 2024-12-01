@@ -13,10 +13,6 @@ class Play extends Phaser.Scene {
 
     //load assets
     preload() {
-        this.load.path = './assets/'
-        //entity assets
-        this.load.image('spiderBody', 'spiderBody.png')
-        this.load.image('spiderLeg', 'spiderLeg.png')
 
     }
 
@@ -35,15 +31,30 @@ class Play extends Phaser.Scene {
         key9 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NINE)
         key0 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO)
 
+        //create collision groups
+        this.edibleGroup = this.add.group({
+            runChildUpdate: true
+        })
+
         //create player
         this.player = new SpiderBody(this, game.config.width/2, game.config.height/2, 'spiderBody', null)
+        //colliders
+        this.physics.add.overlap(this.player.mouthHitbox, this.edibleGroup, this.handleEat, null, this)
+
+        //create enemy
+        this.enemy = new EdibleBug(this, game.config.width/2, game.config.height/2 + 100, 'smallBug', null)
+        this.edibleGroup.add(this.enemy)
     }
 
     //do constantly
     update(timestep, dt) {
         //automatically fed time and delta
         this.player.update(dt)
+        //this.enemy.update()
     }
 
-    
+    handleEat(mouth, bug) {
+        console.log(mouth, bug)
+        bug.destroy()
+    }
 }
