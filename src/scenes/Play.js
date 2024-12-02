@@ -39,12 +39,12 @@ class Play extends Phaser.Scene {
         
         this.physics.world.setBounds(0, 0, 2048, 2048)
 
-        //create player
-        this.resetSpider(this.physics.world.bounds.width/2, this.physics.world.bounds.height/2)
-        
         //set camera bounds
         this.cameras.main.setBounds(0, 0, this.physics.world.bounds.width, this.physics.world.bounds.height)
-        this.cameras.main.startFollow(this.player, true, 0.75, 0.75, 0, 0)
+        //setting the camera follow is part of resetting the spider
+
+        //create player
+        this.resetSpider(this.physics.world.bounds.width/2, this.physics.world.bounds.height/2)
 
         //colliders
         this.physics.add.overlap(this.mouthGroup, this.edibleGroup, this.handleEat, null, this)
@@ -82,5 +82,6 @@ class Play extends Phaser.Scene {
         if(oldSpider) {
             oldSpider.destroy()
         }
+        this.cameras.main.startFollow(this.player, true, 0.75, 0.75, 0, 0)
     }
 }
