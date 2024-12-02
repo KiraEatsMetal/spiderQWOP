@@ -161,8 +161,17 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         
         this.updateMouthHitbox()
 
+        if(Math.abs(this.x - this.scene.physics.world.bounds.width/2) > this.scene.physics.world.bounds.width/2 + 10 || Math.abs(this.y - this.scene.physics.world.bounds.height/2) > this.scene.physics.world.bounds.height/2 + 10) {
+            let angleToCenter = SpiderBody.getAngleFromPosition(this, {x: this.scene.physics.world.bounds.width/2, y: this.scene.physics.world.bounds.height/2})
+            let resetPosition = SpiderBody.getPositionFromAngle(this, angleToCenter, 200)
+            this.scene.resetSpider(resetPosition.x, resetPosition.y)
+            console.log(angleToCenter)
+        }
+
         if(this.logging) {
-            this.logging = false
+            //console.log(this.scene.physics.world.bounds.width, this.scene.physics.world.bounds.height)
+            //console.log(this.x - this.scene.physics.world.bounds.width/2, this.y - this.scene.physics.world.bounds.height/2)
+            //this.logging = false
         }
     }
 
@@ -217,5 +226,24 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         let yDiff = end.y - start.y
         let result = Math.sqrt((xDiff ** 2 + yDiff ** 2))
         return result
+    }
+
+    destroy() {
+        this.legOne.destroy()
+        this.legTwo.destroy()
+        this.legThree.destroy()
+        this.legFour.destroy()
+        this.legFive.destroy()
+        this.legSix.destroy()
+        this.legSeven.destroy()
+        this.legEight.destroy()
+
+        this.leftConstraint.destroy()
+        this.rightConstraint.destroy()
+        this.backConstraint.destroy()
+
+        this.mouthHitbox.destroy()
+
+        super.destroy()
     }
 }
