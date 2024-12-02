@@ -35,26 +35,42 @@ class Play extends Phaser.Scene {
         this.edibleGroup = this.add.group({
             runChildUpdate: true
         })
+        
+        this.physics.world.setBounds(0, 0, 2048, 2048)
 
         //create player
-        this.player = new SpiderBody(this, game.config.width/2, game.config.height/2, 'spiderBody', null)
+        this.player = new SpiderBody(this, this.physics.world.bounds.width/2, this.physics.world.bounds.height/2, 'spiderBody', null)
+        
+        //set camera bounds
+        this.cameras.main.setBounds(0, 0, this.physics.world.bounds.width, this.physics.world.bounds.height)
+        this.cameras.main.startFollow(this.player, true, 0.75, 0.75, 0, 0)
+
         //colliders
         this.physics.add.overlap(this.player.mouthHitbox, this.edibleGroup, this.handleEat, null, this)
+        let enemyCount = 0
+        while(enemyCount < 10) {
+            this.spawnBugAtLocation(Phaser.Math.RND.integerInRange(0, this.physics.world.bounds.width), Phaser.Math.RND.integerInRange(0, this.physics.world.bounds.height))
+            console.log('new bug, count: ', enemyCount)
+            enemyCount++
+        }
+        //this.spawnBugAtLocation(Phaser.Math.RND.integerInRange(0, this.physics.world.bounds.width), Phaser.Math.RND.integerInRange(0, this.physics.world.bounds.height))
 
-        //create enemy
-        this.enemy = new EdibleBug(this, game.config.width/2, game.config.height/2 + 100, 'smallBug', null)
-        this.edibleGroup.add(this.enemy)
     }
 
     //do constantly
     update(timestep, dt) {
         //automatically fed time and delta
         this.player.update(dt)
-        //this.enemy.update()
     }
 
     handleEat(mouth, bug) {
         console.log(mouth, bug)
         bug.destroy()
+    }
+
+    spawnBugAtLocation(x, y) {
+        //create enemy
+        let bug = new EdibleBug(this, x, y, 'smallBug', null)
+        this.edibleGroup.add(bug)
     }
 }

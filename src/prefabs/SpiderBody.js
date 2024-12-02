@@ -130,7 +130,7 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
             this.legVector.set(this.leftLegArray[leftLeg].x - spiderX, this.leftLegArray[leftLeg].y - spiderY).normalize()
             this.totalVector.add(this.legVector)
         }
-        this.leftAngle = this.getAngleFromPosition({x: 0, y: 0}, this.totalVector)
+        this.leftAngle = SpiderBody.getAngleFromPosition({x: 0, y: 0}, this.totalVector)
 
         //reset total vector
         this.totalVector = new Phaser.Math.Vector2(0, 0)
@@ -139,7 +139,7 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
             this.legVector.set(this.rightLegArray[rightLeg].x - spiderX, this.rightLegArray[rightLeg].y - spiderY).normalize()
             this.totalVector.add(this.legVector)
         }
-        this.rightAngle = this.getAngleFromPosition({x: 0, y: 0}, this.totalVector)
+        this.rightAngle = SpiderBody.getAngleFromPosition({x: 0, y: 0}, this.totalVector)
         
         //adjusting angles
         //left angle is from 0-360
@@ -176,7 +176,21 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         this.backConstraint.setPosition(this.x, this.y)
     }
 
-    getAngleFromPosition(start, end) {
+    updateAngle(angle) {
+        this.setAngle(angle)
+        this.leftConstraint.setAngle(angle - 30)
+        //update constraint markers
+        this.rightConstraint.setAngle(angle + 30)
+        this.backConstraint.setAngle(angle - 180)
+    }
+
+    updateMouthHitbox() {
+        //angle is negative because phaser angle is clockwise, our math uses counterclockwise angle
+        let targetMouthPosition = SpiderBody.getPositionFromAngle(this, -this.angle, (this.width / 2) - (this.mouthHitbox.width / 2))
+        this.mouthHitbox.setPosition(targetMouthPosition.x, targetMouthPosition.y)
+    }
+
+    static getAngleFromPosition(start, end) {
         let coords = new Phaser.Math.Vector2(end.x - start.x, end.y - start.y)
         let angle = Math.atan2(-coords.y, coords.x)
         angle = Phaser.Math.RadToDeg(angle)
@@ -189,7 +203,7 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         return angle
     }
 
-    getPositionFromAngle(origin, angleDeg, length) {
+    static getPositionFromAngle(origin, angleDeg, length) {
         let angleRadians = Phaser.Math.DegToRad(angleDeg)
         let x = origin.x + length * Math.cos(angleRadians)
         //remember, phaser y is down, not up, so we subtract instead of add
@@ -198,24 +212,10 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         return position
     }
 
-    updateAngle(angle) {
-        this.setAngle(angle)
-        this.leftConstraint.setAngle(angle - 30)
-        //update constraint markers
-        this.rightConstraint.setAngle(angle + 30)
-        this.backConstraint.setAngle(angle - 180)
-    }
-
-    getDistanceFromPosition(start, end) {
+    static getDistanceFromPosition(start, end) {
         let xDiff = end.x - start.x
         let yDiff = end.y - start.y
         let result = Math.sqrt((xDiff ** 2 + yDiff ** 2))
         return result
-    }
-
-    updateMouthHitbox() {
-        //angle is negative because phaser angle is clockwise, our math uses counterclockwise angle
-        let targetMouthPosition = this.getPositionFromAngle(this, -this.angle, (this.width / 2) - (this.mouthHitbox.width / 2))
-        this.mouthHitbox.setPosition(targetMouthPosition.x, targetMouthPosition.y)
     }
 }
