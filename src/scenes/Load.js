@@ -30,6 +30,9 @@ class Load extends Phaser.Scene {
         this.load.path = './assets/'
         //font
         this.load.bitmapFont('pixelU', 'fonts/pixelU.png', 'fonts/pixelU.xml')
+        this.load.bitmapFont('pixelU64', 'fonts/pixelU64.png', 'fonts/pixelU64.xml')
+        //title splash
+        this.load.image('titleSplash', 'titleSplash.png')
         //entity assets
         this.load.image('spiderBody', 'entity/spiderBody.png')
         this.load.image('spiderLeg', 'entity/spiderLeg.png')
@@ -44,7 +47,7 @@ class Load extends Phaser.Scene {
         this.add.bitmapText(4, game.config.height*2/5, 'pixelU', 'Loading', 32)
         //start the title scene in a bit
         this.titleTimer = this.time.delayedCall(0, () => {
-            this.scene.start('playScene')
+            this.scene.start('titleScene')
         })
         //countdown timer text for the title scene start
         this.titleTimerText = this.add.bitmapText(4, game.config.height/2, 'pixelU', '0000', 32)
