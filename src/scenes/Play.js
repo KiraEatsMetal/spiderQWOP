@@ -37,7 +37,8 @@ class Play extends Phaser.Scene {
         })
         this.mouthGroup = this.add.group()
         
-        this.physics.world.setBounds(0, 0, 2048, 2048)
+        //set world size
+        this.physics.world.setBounds(0, 0, 1028, 1028)
         
         //create background lines
         //how many cuts to make, use amount of segments you want - 1 amount of cuts
