@@ -85,7 +85,7 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
             //if pressing the leg's button, rotate, else ik pull
             if(control.isDown && leg.constraintsActive()) {
                 leg.active = false
-                leg.rotateTarget(3 * dt / 16)
+                leg.rotateTarget(5 * dt / 16)
             } else {
                 //THIS HAS TO HAPPEN BEFORE UPDATE LEG
                 leg.active = true
