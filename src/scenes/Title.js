@@ -39,8 +39,7 @@ class Title extends Phaser.Scene {
         //automatically fed time and delta
         if(Phaser.Input.Keyboard.JustDown(key4)){
             this.scene.start('tutorialScene')
-        }
-        if(Phaser.Input.Keyboard.JustDown(key7)){
+        } else if(Phaser.Input.Keyboard.JustDown(key7)){
             this.scene.start('playScene')
         }
     }
