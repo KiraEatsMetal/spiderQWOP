@@ -40,15 +40,15 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         this.updateAngle(this.angle)
 
         //set leg constraint targets
-        this.legOne.setConstraintTargets(this.backConstraint, this.legTwo)
-        this.legTwo.setConstraintTargets(this.legOne, this.legThree)
-        this.legThree.setConstraintTargets(this.legTwo, this.legFour)
-        this.legFour.setConstraintTargets(this.legThree, this.leftConstraint)
+        this.legOne.setConstraintTargets(this.backConstraint, this.legTwo.leftConstraint)
+        this.legTwo.setConstraintTargets(this.legOne.rightConstraint, this.legThree.leftConstraint)
+        this.legThree.setConstraintTargets(this.legTwo.rightConstraint, this.legFour.leftConstraint)
+        this.legFour.setConstraintTargets(this.legThree.rightConstraint, this.leftConstraint)
         
-        this.legFive.setConstraintTargets(this.legSix, this.rightConstraint)
-        this.legSix.setConstraintTargets(this.legSeven, this.legFive)
-        this.legSeven.setConstraintTargets(this.legEight, this.legSix)
-        this.legEight.setConstraintTargets(this.backConstraint, this.legSeven)
+        this.legFive.setConstraintTargets(this.legSix.leftConstraint, this.rightConstraint)
+        this.legSix.setConstraintTargets(this.legSeven.leftConstraint, this.legFive.rightConstraint)
+        this.legSeven.setConstraintTargets(this.legEight.leftConstraint, this.legSix.rightConstraint)
+        this.legEight.setConstraintTargets(this.backConstraint, this.legSeven.rightConstraint)
         
         //each leg needs a control
         //this.legArray = [this.legOne, this.legTwo, this.legThree, this.legFour, this.legFive, this.legSix, this.legSeven, this.legEight]
@@ -84,11 +84,11 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
             leg.updateConstraints()
             //if pressing the leg's button, rotate, else ik pull
             if(control.isDown && leg.constraintsActive()) {
-                leg.active = false
+                leg.setActive(false)
                 leg.rotateTarget(5 * dt / 16)
             } else {
                 //THIS HAS TO HAPPEN BEFORE UPDATE LEG
-                leg.active = true
+                leg.setActive(true)
                 leg.ikPullBody()
             }
             leg.updateLeg()
@@ -187,8 +187,8 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
 
     updateAngle(angle) {
         this.setAngle(angle)
-        this.leftConstraint.setAngle(angle - 30)
         //update constraint markers
+        this.leftConstraint.setAngle(angle - 30)
         this.rightConstraint.setAngle(angle + 30)
         this.backConstraint.setAngle(angle - 180)
     }
