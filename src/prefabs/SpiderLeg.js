@@ -49,28 +49,26 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
         
         if(this.angleConstraints) {
             //based in part on https://math.stackexchange.com/questions/1044905/simple-angle-between-two-angles-of-circle
-            let adjustedAngle = angle
-            let adjustedMin = this.angleConstraints.min
-            let adjustedMax = this.angleConstraints.max
-
             //create array for adjusting loop
-            let anglesArray = [adjustedMin, adjustedAngle, adjustedMax]
+            let anglesArray = [this.angleConstraints.min, angle, this.angleConstraints.max]
+            
+            //we specifically start with the max so that you don't subtract the min from itself
+            //leading to a min of zero, which then subtracts zero from the other angles, breaking the system
+            //start from the min when calculating angle relative to max
+
             //subtract minimum angle
             for(let i = 2; i >= 0; i -= 1) {
                 anglesArray[i] -= anglesArray[0]
-            }
-            //set angles to 0-360
-            for(let i in anglesArray) {
+                //set angles to 0-360
                 if(anglesArray[i] < 0) {
                     anglesArray[i] += 360
                 }
             }
-            //console.log(anglesArray)
+            
             //set adjusted angle parameters
-            adjustedAngle = anglesArray[1]
-            adjustedMin = anglesArray[0]
-            adjustedMax = anglesArray[2]
-            console.log([adjustedMin, adjustedAngle, adjustedMax])
+            let adjustedAngle = anglesArray[1]
+            let adjustedMin = anglesArray[0]
+            let adjustedMax = anglesArray[2]
 
             //adjusting angle
             if(this.angleConstraints.max - angle > 180) {
@@ -80,25 +78,47 @@ class SpiderLeg extends Phaser.GameObjects.Sprite {
             var difference = Math.abs(this.angleConstraints.max - this.angleConstraints.min)
 
             if(false) {
+                //for if the min was larger than the max
                 //manually set to middle of constraints without calling set target to avoid recursing
                 angleDeg = (this.angleConstraints.max + this.angleConstraints.min) / 2
                 position = SpiderBody.getPositionFromAngle(this.originObject, angleDeg, this.length)
                 this.x = position.x
                 this.y = position.y
 
-            } else if(adjustedAngle * this.direction > adjustedMax * this.direction) {
+            }
+            if(adjustedAngle * this.direction > adjustedMax * this.direction) {
                 //over max
                 console.log('over max: ', adjustedAngle * this.direction, adjustedMax * this.direction)
+                console.log(this.angleConstraints.max)
                 this.setTarget(this.angleConstraints.max - difference * 0.01 * this.direction)
-
-            } else if(adjustedAngle * this.direction < 0 && false) {
-                //under min
-                console.log('under min: ', adjustedAngle * this.direction)
-                this.setTarget(this.angleConstraints.min + difference * 0.01 * this.direction)
-                
             } else {
-                this.x = position.x
-                this.y = position.y
+                //not over max, set angles for under min check
+                //reuse array for adjusting loop
+                anglesArray = [this.angleConstraints.min, angle, this.angleConstraints.max]
+
+                //subtract maximum angle
+                for(let i = 0; i <= 2; i += 1) {
+                    anglesArray[i] -= anglesArray[2]
+                    //set angles to 0-360
+                    if(anglesArray[i] < 0) {
+                        anglesArray[i] += 360
+                    }
+                }
+
+                //set adjusted angle parameters
+                adjustedAngle = anglesArray[1]
+                adjustedMin = anglesArray[0]
+                adjustedMax = anglesArray[2]
+                
+                if(adjustedAngle * this.direction < adjustedMin * this.direction) {
+                    //under min
+                    console.log('under min: ', adjustedAngle * this.direction)
+                    this.setTarget(this.angleConstraints.min + difference * 0.01 * this.direction)
+                } else {
+                    //not under min or over max
+                    this.x = position.x
+                    this.y = position.y
+                }
             }
             /*
             if(this.angleConstraints.max * this.direction < this.angleConstraints.min * this.direction) {
