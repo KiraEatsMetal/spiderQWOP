@@ -22,4 +22,4 @@ let config = {
 let game = new Phaser.Game(config);
 
 //define keys
-let key1, key2, key3, key4, key5, key6, key7, key8, key9, key0
+let key1, key2, key3, key4, key5, key6, key7, key8, key9, key0, keyALT

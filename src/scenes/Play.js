@@ -30,6 +30,7 @@ class Play extends Phaser.Scene {
         key8 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EIGHT)
         key9 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NINE)
         key0 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO)
+        keyALT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ALT)
 
         //create collision groups
         this.edibleGroup = this.add.group({

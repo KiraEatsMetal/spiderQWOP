@@ -26,7 +26,7 @@ class Tutorial extends Phaser.Scene {
         this.add.bitmapText(game.config.width*3/4, game.config.height*2/6 - 64, 'pixelU64', 'PRIME DIRECTIVE', 64).setOrigin(.5).setMaxWidth(game.config.width/3).setRightAlign()
         //instruction
         //run
-        const runText = 'Use [1], [2], [3], [4], [7], [8], [9], and [0] to control your legs. Your body will follow your legs.'
+        const runText = 'Use [1], [2], [3], [4], [7], [8], [9], and [0] to control your legs. Your body will follow your legs. Press [ALT] to show leg numbers.'
         this.add.bitmapText(game.config.width*1/4, game.config.height*2/6 + 32*1, 'pixelU', runText, 32).setOrigin(.5, 0).setMaxWidth(game.config.width*0.35)
         //fight
         const fightText = "Touch the MALWARE with your head. Your VIRUS BYTER 3000(c) will automatically BYTE the MALWARE, deleting it. BYTE all the malware."

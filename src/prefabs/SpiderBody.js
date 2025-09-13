@@ -9,17 +9,17 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         this.body.setCircle(this.height/2, (this.width - this.height) / 2)
 
         //create legs
-        this.legOne = new SpiderLeg(scene, this, null, null, 100, 210, true)
-        this.legEight = new SpiderLeg(scene, this, null, null, 100, -30)
+        this.legOne = new SpiderLeg(scene, this, null, null, 100, 210, true, "1")
+        this.legEight = new SpiderLeg(scene, this, null, null, 100, -30, false, "0")
         
-        this.legTwo = new SpiderLeg(scene, this, null, null, 100, 190, true)
-        this.legSeven = new SpiderLeg(scene, this, null, null, 100, -10)
+        this.legTwo = new SpiderLeg(scene, this, null, null, 100, 190, true, "2")
+        this.legSeven = new SpiderLeg(scene, this, null, null, 100, -10, false, "9")
 
-        this.legThree = new SpiderLeg(scene, this, null, null, 100, 170, true)
-        this.legSix = new SpiderLeg(scene, this, null, null, 100, 10)
+        this.legThree = new SpiderLeg(scene, this, null, null, 100, 170, true, "3")
+        this.legSix = new SpiderLeg(scene, this, null, null, 100, 10, false, "8")
 
-        this.legFive = new SpiderLeg(scene, this, null, null, 100, 30)
-        this.legFour = new SpiderLeg(scene, this, null, null, 100, 150, true)
+        this.legFour = new SpiderLeg(scene, this, null, null, 100, 150, true, "4")
+        this.legFive = new SpiderLeg(scene, this, null, null, 100, 30, false, "7")
 
         //put body on top of legs
         this.setDepth(1)
@@ -72,6 +72,9 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         this.totalVector = new Phaser.Math.Vector2(0, 0)
         this.legVector = new Phaser.Math.Vector2(0, 0)
         this.logging = true
+
+        this.altWasDown
+        this.legNumbersVisible = false
     }
 
     update(dt) {
@@ -161,6 +164,7 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
         
         this.updateMouthHitbox()
 
+        //if out of bounds, reset spider in bounds
         if(Math.abs(this.x - this.scene.physics.world.bounds.width/2) > this.scene.physics.world.bounds.width/2 + 10 || Math.abs(this.y - this.scene.physics.world.bounds.height/2) > this.scene.physics.world.bounds.height/2 + 10) {
             let angleToCenter = SpiderBody.getAngleFromPosition(this, {x: this.scene.physics.world.bounds.width/2, y: this.scene.physics.world.bounds.height/2})
             let resetPosition = SpiderBody.getPositionFromAngle(this, angleToCenter, 200)
@@ -168,7 +172,34 @@ class SpiderBody extends Phaser.GameObjects.Sprite {
             console.log(angleToCenter)
         }
 
+        //if alt key just pressed
+        if(keyALT.isDown && this.altWasDown == false) {
+            if(!this.legNumbersVisible) {
+                for(let leg in this.legArray) {
+                    this.legArray[leg].legNumber.setVisible(true)
+                }
+                this.legNumbersVisible = true
+            } else {
+                for(let leg in this.legArray) {
+                    this.legArray[leg].legNumber.setVisible(false)
+                }
+                this.legNumbersVisible = false
+            }
+        }
+        //if alt key just released
+        if(!keyALT.isDown && this.altWasDown == true) {
+        }
+
+        if(keyALT.isDown) {
+            this.altWasDown = true
+        } else {
+            this.altWasDown = false
+        }
+
         if(this.logging) {
+            if(keyALT.isDown) {
+                console.log('alt down')
+            }
             //console.log(this.scene.physics.world.bounds.width, this.scene.physics.world.bounds.height)
             //console.log(this.x - this.scene.physics.world.bounds.width/2, this.y - this.scene.physics.world.bounds.height/2)
             //this.logging = false
